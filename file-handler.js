@@ -4,6 +4,7 @@ export default class FileHandler {
     }
 
     uploadFile(filePath) {
-        return `${__dirname}/${filePath}`
+        // return `${__dirname}/${filePath}`
+        return `http://localhost:4000/${filePath.split('uploads/')[1]}`
     }
 }

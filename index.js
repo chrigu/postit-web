@@ -45,7 +45,7 @@ server.listen(4000, function () {
 app.post('/upload', upload.single('file'), async (req, res) => {
 // app.post('/recipe', async (req, res) => {
   processImage(fileHandler.uploadFile(req.file.path), req.body.clientId)
-  io.to(req.body.clientId).emit('upload_state', 'hello')
+  io.to(req.body.clientId).emit('uploadState', 'hello')
   res.sendStatus(200)
     // try {
     //   if (req.file) {
