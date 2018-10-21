@@ -1,0 +1,38 @@
+scalar DateTime
+scalar Upload
+
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Project {
+  id: ID!
+  name: String!
+  url: String!
+  createdAt: DateTime!
+}
+
+type Image {
+  id: ID!
+  url: String!
+  detectedText: String!
+  createdAt: DateTime!
+  project: Project @relation(name: "ImagesProject")
+}
+
+type Query {
+    uploads: [File]
+  }
+type Mutation {
+  singleUpload (file: Upload!): File!
+  multipleUpload (files: [Upload!]!): [File!]!
+}
+type File {
+  id: ID!
+  path: String!
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}
