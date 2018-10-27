@@ -2,12 +2,15 @@ import * as shortid from 'shortid'
 import { createWriteStream } from 'fs' 
 const uploadDir = './uploads'
 
-const Mutation = {
-    singleUpload: (obj, { file }, ctx, info) => processUpload(file, ctx, obj, info),
-    multipleUpload: (obj, { files }) => Promise.all(files.map(processUpload)),
+const uploadMutations = {
+    singleUpload: (obj, { file, projectId }, ctx, info) => processUpload(file, ctx, obj, info, projectId),
+    createProject: (root, args, ctx, info) => {
+      console.log('some', args, ctx)
+      return ctx.prisma.createProject({ name: args.name, url: '/test'}, info)
+    },
 }
 
-export default Mutation
+export default uploadMutations
 
 const storeUpload = async ({ stream, filename }) => {
     const id = shortid.generate()
@@ -21,10 +24,19 @@ const storeUpload = async ({ stream, filename }) => {
     )
   }
 
-const processUpload = async (upload, ctx, obj, info) => {
+const processUpload = async (upload, ctx, obj, info, projectId) => {
     const { stream, filename, mimetype, encoding } = await upload
     const { id, path } = await storeUpload({ stream, filename })
     // console.log({ id, filename, mimetype, encoding, path })
-    ctx.prisma.createImage({ data: { url: path, detecedText: 'test',  createdAt: Date.now()} })
-    return Promise.resolve({ id, filename, mimetype, encoding, path });
+    return ctx.prisma.createImage( { 
+      url: path, 
+      detectedText: 'test',  
+      project: {
+          connect: {
+            id: projectId
+          }
+        },
+        status:"Uploaded" 
+      })
+    // return Promise.resolve({ id, url: path });
   }

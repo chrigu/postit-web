@@ -196,8 +196,12 @@ export type ImageOrderByInput =
   | "detectedText_DESC"
   | "createdAt_ASC"
   | "createdAt_DESC"
+  | "status_ASC"
+  | "status_DESC"
   | "updatedAt_ASC"
   | "updatedAt_DESC";
+
+export type ImageStatus = "Uploaded" | "Analyzing" | "Analyzed";
 
 export type ProjectOrderByInput =
   | "id_ASC"
@@ -223,9 +227,9 @@ export type UserOrderByInput =
   | "updatedAt_ASC"
   | "updatedAt_DESC";
 
-export interface ProjectUpdateDataInput {
-  name?: String;
-  url?: String;
+export interface ProjectUpsertNestedInput {
+  update: ProjectUpdateDataInput;
+  create: ProjectCreateInput;
 }
 
 export type ImageWhereUniqueInput = AtLeastOne<{
@@ -303,6 +307,7 @@ export interface ImageUpdateInput {
   url?: String;
   detectedText?: String;
   project?: ProjectUpdateOneInput;
+  status?: ImageStatus;
 }
 
 export interface UserUpdateInput {
@@ -324,15 +329,9 @@ export interface ProjectCreateOneInput {
   connect?: ProjectWhereUniqueInput;
 }
 
-export interface UserSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: UserWhereInput;
-  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-  NOT?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+export interface ProjectUpdateDataInput {
+  name?: String;
+  url?: String;
 }
 
 export interface ProjectSubscriptionWhereInput {
@@ -384,6 +383,7 @@ export interface ImageCreateInput {
   url: String;
   detectedText: String;
   project?: ProjectCreateOneInput;
+  status: ImageStatus;
 }
 
 export type UserWhereUniqueInput = AtLeastOne<{
@@ -399,9 +399,15 @@ export interface ProjectUpdateOneInput {
   connect?: ProjectWhereUniqueInput;
 }
 
-export interface ProjectUpsertNestedInput {
-  update: ProjectUpdateDataInput;
-  create: ProjectCreateInput;
+export interface UserSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: UserWhereInput;
+  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  NOT?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
 }
 
 export interface UserCreateInput {
@@ -460,6 +466,10 @@ export interface ImageWhereInput {
   createdAt_gt?: DateTimeInput;
   createdAt_gte?: DateTimeInput;
   project?: ProjectWhereInput;
+  status?: ImageStatus;
+  status_not?: ImageStatus;
+  status_in?: ImageStatus[] | ImageStatus;
+  status_not_in?: ImageStatus[] | ImageStatus;
   AND?: ImageWhereInput[] | ImageWhereInput;
   OR?: ImageWhereInput[] | ImageWhereInput;
   NOT?: ImageWhereInput[] | ImageWhereInput;
@@ -473,20 +483,22 @@ export interface NodeNode {
   id: ID_Output;
 }
 
-export interface UserEdgeNode {
-  cursor: String;
-}
+export interface UserConnectionNode {}
 
-export interface UserEdge extends Promise<UserEdgeNode>, Fragmentable {
-  node: <T = User>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface UserEdgeSubscription
-  extends Promise<AsyncIterator<UserEdgeNode>>,
+export interface UserConnection
+  extends Promise<UserConnectionNode>,
     Fragmentable {
-  node: <T = UserSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
+  pageInfo: <T = PageInfo>() => T;
+  edges: <T = FragmentableArray<UserEdgeNode>>() => T;
+  aggregate: <T = AggregateUser>() => T;
+}
+
+export interface UserConnectionSubscription
+  extends Promise<AsyncIterator<UserConnectionNode>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateUserSubscription>() => T;
 }
 
 export interface PageInfoNode {
@@ -549,22 +561,20 @@ export interface ImageConnectionSubscription
   aggregate: <T = AggregateImageSubscription>() => T;
 }
 
-export interface UserConnectionNode {}
-
-export interface UserConnection
-  extends Promise<UserConnectionNode>,
-    Fragmentable {
-  pageInfo: <T = PageInfo>() => T;
-  edges: <T = FragmentableArray<UserEdgeNode>>() => T;
-  aggregate: <T = AggregateUser>() => T;
+export interface UserEdgeNode {
+  cursor: String;
 }
 
-export interface UserConnectionSubscription
-  extends Promise<AsyncIterator<UserConnectionNode>>,
+export interface UserEdge extends Promise<UserEdgeNode>, Fragmentable {
+  node: <T = User>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface UserEdgeSubscription
+  extends Promise<AsyncIterator<UserEdgeNode>>,
     Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateUserSubscription>() => T;
+  node: <T = UserSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
 }
 
 export interface AggregateUserNode {
@@ -699,6 +709,7 @@ export interface ImagePreviousValuesNode {
   url: String;
   detectedText: String;
   createdAt: DateTimeOutput;
+  status: ImageStatus;
 }
 
 export interface ImagePreviousValues
@@ -708,6 +719,7 @@ export interface ImagePreviousValues
   url: () => Promise<String>;
   detectedText: () => Promise<String>;
   createdAt: () => Promise<DateTimeOutput>;
+  status: () => Promise<ImageStatus>;
 }
 
 export interface ImagePreviousValuesSubscription
@@ -717,6 +729,7 @@ export interface ImagePreviousValuesSubscription
   url: () => Promise<AsyncIterator<String>>;
   detectedText: () => Promise<AsyncIterator<String>>;
   createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+  status: () => Promise<AsyncIterator<ImageStatus>>;
 }
 
 export interface ImageSubscriptionPayloadNode {
@@ -843,6 +856,7 @@ export interface ImageNode {
   url: String;
   detectedText: String;
   createdAt: DateTimeOutput;
+  status: ImageStatus;
 }
 
 export interface Image extends Promise<ImageNode>, Fragmentable {
@@ -851,6 +865,7 @@ export interface Image extends Promise<ImageNode>, Fragmentable {
   detectedText: () => Promise<String>;
   createdAt: () => Promise<DateTimeOutput>;
   project: <T = Project>() => T;
+  status: () => Promise<ImageStatus>;
 }
 
 export interface ImageSubscription
@@ -861,6 +876,7 @@ export interface ImageSubscription
   detectedText: () => Promise<AsyncIterator<String>>;
   createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
   project: <T = ProjectSubscription>() => T;
+  status: () => Promise<AsyncIterator<ImageStatus>>;
 }
 
 /*

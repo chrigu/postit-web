@@ -1,8 +1,10 @@
-const Project = {
+export const Project = {
     id: project => project.id,
     createdAt: project => project.createdAt,
     name: project => project.name,
-    url: parent => parent.url,
+    url: project => project.url,
   }
   
-export default Project
+export const projectQueries = {
+  getProject: (root, args, ctx, info) => ctx.prisma.project({ id: args.id }, info),
+}

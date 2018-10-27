@@ -1,0 +1,30 @@
+type User {
+  id: ID! @unique
+  name: String!
+}
+
+type Project {
+  id: ID! @unique
+  name: String!
+  url: String!
+  createdAt: DateTime!
+}
+
+type Image {
+  id: ID! @unique
+  url: String!
+  detectedText: String!
+  createdAt: DateTime!
+  project: Project @relation(name: "ImagesProject")
+  status: ImageStatus!
+}
+
+enum ImageStatus {
+  Uploaded, Analyzing, Analyzed
+}
+
+type Postit {
+  id: ID! @unique;
+  image: Image @relation(name: "PostitsImage")
+  detectedText: String
+}

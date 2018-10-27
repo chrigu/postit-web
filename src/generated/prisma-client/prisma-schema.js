@@ -23,6 +23,7 @@ type Image {
   detectedText: String!
   createdAt: DateTime!
   project: Project
+  status: ImageStatus!
 }
 
 type ImageConnection {
@@ -35,6 +36,7 @@ input ImageCreateInput {
   url: String!
   detectedText: String!
   project: ProjectCreateOneInput
+  status: ImageStatus!
 }
 
 type ImageEdge {
@@ -51,6 +53,8 @@ enum ImageOrderByInput {
   detectedText_DESC
   createdAt_ASC
   createdAt_DESC
+  status_ASC
+  status_DESC
   updatedAt_ASC
   updatedAt_DESC
 }
@@ -60,6 +64,13 @@ type ImagePreviousValues {
   url: String!
   detectedText: String!
   createdAt: DateTime!
+  status: ImageStatus!
+}
+
+enum ImageStatus {
+  Uploaded
+  Analyzing
+  Analyzed
 }
 
 type ImageSubscriptionPayload {
@@ -84,6 +95,7 @@ input ImageUpdateInput {
   url: String
   detectedText: String
   project: ProjectUpdateOneInput
+  status: ImageStatus
 }
 
 input ImageWhereInput {
@@ -138,6 +150,10 @@ input ImageWhereInput {
   createdAt_gt: DateTime
   createdAt_gte: DateTime
   project: ProjectWhereInput
+  status: ImageStatus
+  status_not: ImageStatus
+  status_in: [ImageStatus!]
+  status_not_in: [ImageStatus!]
   AND: [ImageWhereInput!]
   OR: [ImageWhereInput!]
   NOT: [ImageWhereInput!]
