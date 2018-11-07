@@ -1,11 +1,13 @@
 import { Project, projectQueries} from './Project'
 import uploadMutations from './Upload'
 import imageSubscriptions from './Subscriptions'
-import { Image } from './Image'
+import { Image, imageQueries } from './Image'
 import { ImageStatusReturnType } from './ImageStatusReturnType'
+import { Postit } from './Postit'
 
 const Query = {
-    ...projectQueries
+    ...projectQueries,
+    ...imageQueries
 }
 
 const Mutation = {
@@ -20,6 +22,7 @@ const resolvers = {
   Project,
   Image,
   ImageStatusReturnType,
+  Postit,
   Mutation,
   Query,
   Subscription

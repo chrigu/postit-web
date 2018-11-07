@@ -1,3 +1,4 @@
+
 scalar DateTime
 scalar Upload
 
@@ -14,21 +15,34 @@ type Project {
   createdAt: DateTime!
 }
 
+type Postit {
+  id: ID! @unique
+  image: Image 
+  url: String!
+  detectedText: String
+  x: Int!
+  y: Int!
+  width: Int!
+  height: Int!
+}
+
 type Image {
   id: ID!
   url: String!
   detectedText: String!
   createdAt: DateTime!
   project: Project @relation(name: "ImagesProject")
+  status: ImageStatus
+  width: Int
+  height: Int
+  postits: [Postit!]!
 }
 
-type Query {
-    uploads: [File]
-  }
-type Mutation {
-  singleUpload (file: Upload!): File!
-  multipleUpload (files: [Upload!]!): [File!]!
+enum ImageStatus {
+  Uploaded, Analyzing, Analyzed
 }
+
+
 type File {
   id: ID!
   path: String!
@@ -36,3 +50,44 @@ type File {
   mimetype: String!
   encoding: String!
 }
+
+input ProjectCreateInput {
+  name: String!
+}
+
+type ImagePreviousValues {
+  id: ID!
+  url: String!
+  detectedText: String!
+  createdAt: DateTime!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+type ImageStatusReturnType {
+  id: ID!
+  status:ImageStatus!
+}
+
+type Query {
+  uploads: [File]
+  getProject (id: ID!): Project
+  postitsForImage (id: ID!): [Postit]!
+  image (id: ID!): Image
+  imageWithPostits(id: ID!): Image
+ }
+
+type Mutation {
+  singleUpload (file: Upload!, projectId: ID!): Image!
+  createProject (name: String!): Project!
+}
+
+type Subscription {
+  imageStatus(where: ID!): ImageStatusReturnType 
+}
+
+

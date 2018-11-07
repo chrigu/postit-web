@@ -16,7 +16,10 @@ type Image {
   detectedText: String!
   createdAt: DateTime!
   project: Project @relation(name: "ImagesProject")
-  status: ImageStatus!
+  status: String!
+  width: Int
+  height: Int
+  postits: [Postit!]!
 }
 
 enum ImageStatus {
@@ -24,7 +27,12 @@ enum ImageStatus {
 }
 
 type Postit {
-  id: ID! @unique;
-  image: Image @relation(name: "PostitsImage")
+  id: ID! @unique
+  image: Image
+  url: String!
   detectedText: String
+  x: Int!
+  y: Int!
+  width: Int!
+  height: Int!
 }

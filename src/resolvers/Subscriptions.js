@@ -1,11 +1,3 @@
-// export const WEATHER_LOCATION = gql`
-//     query ($id: ID!) {
-//     image(where: {id: $id}) {
-//         status
-//     }
-// }
-// `
-
 
 const imageSubscriptions = {
     imageStatus: {
@@ -14,16 +6,17 @@ const imageSubscriptions = {
             .image({
               where: {
                 mutation_in: ['UPDATED'],
+                updatedFields_contains: 'status',
                 node: {
                     id: args.id
                 }
               },
-            }).node().status() // why dows node not return an object with the status property?
+            }).node()
         },
-        resolve: (payload, args, context, info) => { // hackish solution as the above won't work
+        resolve: payload => {
           return {
-            id: args.where,
-            status: payload
+            id: payload.id,
+            status: payload.status
           }
         },
       },

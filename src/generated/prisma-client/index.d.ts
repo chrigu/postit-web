@@ -12,6 +12,7 @@ type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
 
 export interface Exists {
   image: (where?: ImageWhereInput) => Promise<boolean>;
+  postit: (where?: PostitWhereInput) => Promise<boolean>;
   project: (where?: ProjectWhereInput) => Promise<boolean>;
   user: (where?: UserWhereInput) => Promise<boolean>;
 }
@@ -59,6 +60,29 @@ export interface Prisma {
       last?: Int;
     }
   ) => ImageConnection;
+  postit: (where: PostitWhereUniqueInput) => Postit;
+  postits: (
+    args?: {
+      where?: PostitWhereInput;
+      orderBy?: PostitOrderByInput;
+      skip?: Int;
+      after?: String;
+      before?: String;
+      first?: Int;
+      last?: Int;
+    }
+  ) => FragmentableArray<PostitNode>;
+  postitsConnection: (
+    args?: {
+      where?: PostitWhereInput;
+      orderBy?: PostitOrderByInput;
+      skip?: Int;
+      after?: String;
+      before?: String;
+      first?: Int;
+      last?: Int;
+    }
+  ) => PostitConnection;
   project: (where: ProjectWhereUniqueInput) => Project;
   projects: (
     args?: {
@@ -127,6 +151,22 @@ export interface Prisma {
   ) => Image;
   deleteImage: (where: ImageWhereUniqueInput) => Image;
   deleteManyImages: (where?: ImageWhereInput) => BatchPayload;
+  createPostit: (data: PostitCreateInput) => Postit;
+  updatePostit: (
+    args: { data: PostitUpdateInput; where: PostitWhereUniqueInput }
+  ) => Postit;
+  updateManyPostits: (
+    args: { data: PostitUpdateInput; where?: PostitWhereInput }
+  ) => BatchPayload;
+  upsertPostit: (
+    args: {
+      where: PostitWhereUniqueInput;
+      create: PostitCreateInput;
+      update: PostitUpdateInput;
+    }
+  ) => Postit;
+  deletePostit: (where: PostitWhereUniqueInput) => Postit;
+  deleteManyPostits: (where?: PostitWhereInput) => BatchPayload;
   createProject: (data: ProjectCreateInput) => Project;
   updateProject: (
     args: { data: ProjectUpdateInput; where: ProjectWhereUniqueInput }
@@ -171,6 +211,9 @@ export interface Subscription {
   image: (
     where?: ImageSubscriptionWhereInput
   ) => ImageSubscriptionPayloadSubscription;
+  postit: (
+    where?: PostitSubscriptionWhereInput
+  ) => PostitSubscriptionPayloadSubscription;
   project: (
     where?: ProjectSubscriptionWhereInput
   ) => ProjectSubscriptionPayloadSubscription;
@@ -187,6 +230,26 @@ export interface ClientConstructor<T> {
  * Types
  */
 
+export type PostitOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "url_ASC"
+  | "url_DESC"
+  | "detectedText_ASC"
+  | "detectedText_DESC"
+  | "x_ASC"
+  | "x_DESC"
+  | "y_ASC"
+  | "y_DESC"
+  | "width_ASC"
+  | "width_DESC"
+  | "height_ASC"
+  | "height_DESC"
+  | "createdAt_ASC"
+  | "createdAt_DESC"
+  | "updatedAt_ASC"
+  | "updatedAt_DESC";
+
 export type ImageOrderByInput =
   | "id_ASC"
   | "id_DESC"
@@ -198,10 +261,12 @@ export type ImageOrderByInput =
   | "createdAt_DESC"
   | "status_ASC"
   | "status_DESC"
+  | "width_ASC"
+  | "width_DESC"
+  | "height_ASC"
+  | "height_DESC"
   | "updatedAt_ASC"
   | "updatedAt_DESC";
-
-export type ImageStatus = "Uploaded" | "Analyzing" | "Analyzed";
 
 export type ProjectOrderByInput =
   | "id_ASC"
@@ -215,8 +280,6 @@ export type ProjectOrderByInput =
   | "updatedAt_ASC"
   | "updatedAt_DESC";
 
-export type MutationType = "CREATED" | "UPDATED" | "DELETED";
-
 export type UserOrderByInput =
   | "id_ASC"
   | "id_DESC"
@@ -227,24 +290,115 @@ export type UserOrderByInput =
   | "updatedAt_ASC"
   | "updatedAt_DESC";
 
-export interface ProjectUpsertNestedInput {
-  update: ProjectUpdateDataInput;
-  create: ProjectCreateInput;
+export type MutationType = "CREATED" | "UPDATED" | "DELETED";
+
+export interface ProjectCreateOneInput {
+  create?: ProjectCreateInput;
+  connect?: ProjectWhereUniqueInput;
 }
 
 export type ImageWhereUniqueInput = AtLeastOne<{
   id: ID_Input;
 }>;
 
-export interface ImageSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: ImageWhereInput;
-  AND?: ImageSubscriptionWhereInput[] | ImageSubscriptionWhereInput;
-  OR?: ImageSubscriptionWhereInput[] | ImageSubscriptionWhereInput;
-  NOT?: ImageSubscriptionWhereInput[] | ImageSubscriptionWhereInput;
+export interface ImageUpdateInput {
+  url?: String;
+  detectedText?: String;
+  project?: ProjectUpdateOneInput;
+  status?: String;
+  width?: Int;
+  height?: Int;
+  postits?: PostitUpdateManyWithoutImageInput;
+}
+
+export interface PostitWhereInput {
+  id?: ID_Input;
+  id_not?: ID_Input;
+  id_in?: ID_Input[] | ID_Input;
+  id_not_in?: ID_Input[] | ID_Input;
+  id_lt?: ID_Input;
+  id_lte?: ID_Input;
+  id_gt?: ID_Input;
+  id_gte?: ID_Input;
+  id_contains?: ID_Input;
+  id_not_contains?: ID_Input;
+  id_starts_with?: ID_Input;
+  id_not_starts_with?: ID_Input;
+  id_ends_with?: ID_Input;
+  id_not_ends_with?: ID_Input;
+  image?: ImageWhereInput;
+  url?: String;
+  url_not?: String;
+  url_in?: String[] | String;
+  url_not_in?: String[] | String;
+  url_lt?: String;
+  url_lte?: String;
+  url_gt?: String;
+  url_gte?: String;
+  url_contains?: String;
+  url_not_contains?: String;
+  url_starts_with?: String;
+  url_not_starts_with?: String;
+  url_ends_with?: String;
+  url_not_ends_with?: String;
+  detectedText?: String;
+  detectedText_not?: String;
+  detectedText_in?: String[] | String;
+  detectedText_not_in?: String[] | String;
+  detectedText_lt?: String;
+  detectedText_lte?: String;
+  detectedText_gt?: String;
+  detectedText_gte?: String;
+  detectedText_contains?: String;
+  detectedText_not_contains?: String;
+  detectedText_starts_with?: String;
+  detectedText_not_starts_with?: String;
+  detectedText_ends_with?: String;
+  detectedText_not_ends_with?: String;
+  x?: Int;
+  x_not?: Int;
+  x_in?: Int[] | Int;
+  x_not_in?: Int[] | Int;
+  x_lt?: Int;
+  x_lte?: Int;
+  x_gt?: Int;
+  x_gte?: Int;
+  y?: Int;
+  y_not?: Int;
+  y_in?: Int[] | Int;
+  y_not_in?: Int[] | Int;
+  y_lt?: Int;
+  y_lte?: Int;
+  y_gt?: Int;
+  y_gte?: Int;
+  width?: Int;
+  width_not?: Int;
+  width_in?: Int[] | Int;
+  width_not_in?: Int[] | Int;
+  width_lt?: Int;
+  width_lte?: Int;
+  width_gt?: Int;
+  width_gte?: Int;
+  height?: Int;
+  height_not?: Int;
+  height_in?: Int[] | Int;
+  height_not_in?: Int[] | Int;
+  height_lt?: Int;
+  height_lte?: Int;
+  height_gt?: Int;
+  height_gte?: Int;
+  AND?: PostitWhereInput[] | PostitWhereInput;
+  OR?: PostitWhereInput[] | PostitWhereInput;
+  NOT?: PostitWhereInput[] | PostitWhereInput;
+}
+
+export interface ProjectUpdateOneInput {
+  create?: ProjectCreateInput;
+  update?: ProjectUpdateDataInput;
+  upsert?: ProjectUpsertNestedInput;
+  delete?: Boolean;
+  disconnect?: Boolean;
+  connect?: ProjectWhereUniqueInput;
 }
 
 export interface ProjectWhereInput {
@@ -303,46 +457,23 @@ export interface ProjectWhereInput {
   NOT?: ProjectWhereInput[] | ProjectWhereInput;
 }
 
-export interface ImageUpdateInput {
-  url?: String;
-  detectedText?: String;
-  project?: ProjectUpdateOneInput;
-  status?: ImageStatus;
+export type UserWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+}>;
+
+export interface ProjectUpsertNestedInput {
+  update: ProjectUpdateDataInput;
+  create: ProjectCreateInput;
 }
 
-export interface UserUpdateInput {
-  name?: String;
-}
-
-export interface ProjectCreateInput {
-  name: String;
-  url: String;
-}
-
-export interface ProjectUpdateInput {
-  name?: String;
-  url?: String;
-}
-
-export interface ProjectCreateOneInput {
-  create?: ProjectCreateInput;
-  connect?: ProjectWhereUniqueInput;
+export interface ImageCreateOneWithoutPostitsInput {
+  create?: ImageCreateWithoutPostitsInput;
+  connect?: ImageWhereUniqueInput;
 }
 
 export interface ProjectUpdateDataInput {
   name?: String;
   url?: String;
-}
-
-export interface ProjectSubscriptionWhereInput {
-  mutation_in?: MutationType[] | MutationType;
-  updatedFields_contains?: String;
-  updatedFields_contains_every?: String[] | String;
-  updatedFields_contains_some?: String[] | String;
-  node?: ProjectWhereInput;
-  AND?: ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput;
-  OR?: ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput;
-  NOT?: ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput;
 }
 
 export interface UserWhereInput {
@@ -379,35 +510,121 @@ export interface UserWhereInput {
   NOT?: UserWhereInput[] | UserWhereInput;
 }
 
-export interface ImageCreateInput {
-  url: String;
-  detectedText: String;
-  project?: ProjectCreateOneInput;
-  status: ImageStatus;
-}
-
-export type UserWhereUniqueInput = AtLeastOne<{
-  id: ID_Input;
-}>;
-
-export interface ProjectUpdateOneInput {
-  create?: ProjectCreateInput;
-  update?: ProjectUpdateDataInput;
-  upsert?: ProjectUpsertNestedInput;
-  delete?: Boolean;
-  disconnect?: Boolean;
-  connect?: ProjectWhereUniqueInput;
-}
-
-export interface UserSubscriptionWhereInput {
+export interface ProjectSubscriptionWhereInput {
   mutation_in?: MutationType[] | MutationType;
   updatedFields_contains?: String;
   updatedFields_contains_every?: String[] | String;
   updatedFields_contains_some?: String[] | String;
-  node?: UserWhereInput;
-  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
-  NOT?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  node?: ProjectWhereInput;
+  AND?: ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput;
+  OR?: ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput;
+  NOT?: ProjectSubscriptionWhereInput[] | ProjectSubscriptionWhereInput;
+}
+
+export interface PostitCreateInput {
+  image?: ImageCreateOneWithoutPostitsInput;
+  url: String;
+  detectedText?: String;
+  x: Int;
+  y: Int;
+  width: Int;
+  height: Int;
+}
+
+export interface ImageSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: ImageWhereInput;
+  AND?: ImageSubscriptionWhereInput[] | ImageSubscriptionWhereInput;
+  OR?: ImageSubscriptionWhereInput[] | ImageSubscriptionWhereInput;
+  NOT?: ImageSubscriptionWhereInput[] | ImageSubscriptionWhereInput;
+}
+
+export interface PostitUpsertWithWhereUniqueWithoutImageInput {
+  where: PostitWhereUniqueInput;
+  update: PostitUpdateWithoutImageDataInput;
+  create: PostitCreateWithoutImageInput;
+}
+
+export type PostitWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+}>;
+
+export interface PostitUpdateWithoutImageDataInput {
+  url?: String;
+  detectedText?: String;
+  x?: Int;
+  y?: Int;
+  width?: Int;
+  height?: Int;
+}
+
+export interface ProjectUpdateInput {
+  name?: String;
+  url?: String;
+}
+
+export interface PostitUpdateWithWhereUniqueWithoutImageInput {
+  where: PostitWhereUniqueInput;
+  data: PostitUpdateWithoutImageDataInput;
+}
+
+export type ProjectWhereUniqueInput = AtLeastOne<{
+  id: ID_Input;
+}>;
+
+export interface ImageUpdateOneWithoutPostitsInput {
+  create?: ImageCreateWithoutPostitsInput;
+  update?: ImageUpdateWithoutPostitsDataInput;
+  upsert?: ImageUpsertWithoutPostitsInput;
+  delete?: Boolean;
+  disconnect?: Boolean;
+  connect?: ImageWhereUniqueInput;
+}
+
+export interface ImageCreateWithoutPostitsInput {
+  url: String;
+  detectedText: String;
+  project?: ProjectCreateOneInput;
+  status: String;
+  width?: Int;
+  height?: Int;
+}
+
+export interface ImageCreateInput {
+  url: String;
+  detectedText: String;
+  project?: ProjectCreateOneInput;
+  status: String;
+  width?: Int;
+  height?: Int;
+  postits?: PostitCreateManyWithoutImageInput;
+}
+
+export interface PostitSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: PostitWhereInput;
+  AND?: PostitSubscriptionWhereInput[] | PostitSubscriptionWhereInput;
+  OR?: PostitSubscriptionWhereInput[] | PostitSubscriptionWhereInput;
+  NOT?: PostitSubscriptionWhereInput[] | PostitSubscriptionWhereInput;
+}
+
+export interface PostitUpdateManyWithoutImageInput {
+  create?: PostitCreateWithoutImageInput[] | PostitCreateWithoutImageInput;
+  delete?: PostitWhereUniqueInput[] | PostitWhereUniqueInput;
+  connect?: PostitWhereUniqueInput[] | PostitWhereUniqueInput;
+  disconnect?: PostitWhereUniqueInput[] | PostitWhereUniqueInput;
+  update?:
+    | PostitUpdateWithWhereUniqueWithoutImageInput[]
+    | PostitUpdateWithWhereUniqueWithoutImageInput;
+  upsert?:
+    | PostitUpsertWithWhereUniqueWithoutImageInput[]
+    | PostitUpsertWithWhereUniqueWithoutImageInput;
 }
 
 export interface UserCreateInput {
@@ -466,21 +683,276 @@ export interface ImageWhereInput {
   createdAt_gt?: DateTimeInput;
   createdAt_gte?: DateTimeInput;
   project?: ProjectWhereInput;
-  status?: ImageStatus;
-  status_not?: ImageStatus;
-  status_in?: ImageStatus[] | ImageStatus;
-  status_not_in?: ImageStatus[] | ImageStatus;
+  status?: String;
+  status_not?: String;
+  status_in?: String[] | String;
+  status_not_in?: String[] | String;
+  status_lt?: String;
+  status_lte?: String;
+  status_gt?: String;
+  status_gte?: String;
+  status_contains?: String;
+  status_not_contains?: String;
+  status_starts_with?: String;
+  status_not_starts_with?: String;
+  status_ends_with?: String;
+  status_not_ends_with?: String;
+  width?: Int;
+  width_not?: Int;
+  width_in?: Int[] | Int;
+  width_not_in?: Int[] | Int;
+  width_lt?: Int;
+  width_lte?: Int;
+  width_gt?: Int;
+  width_gte?: Int;
+  height?: Int;
+  height_not?: Int;
+  height_in?: Int[] | Int;
+  height_not_in?: Int[] | Int;
+  height_lt?: Int;
+  height_lte?: Int;
+  height_gt?: Int;
+  height_gte?: Int;
+  postits_every?: PostitWhereInput;
+  postits_some?: PostitWhereInput;
+  postits_none?: PostitWhereInput;
   AND?: ImageWhereInput[] | ImageWhereInput;
   OR?: ImageWhereInput[] | ImageWhereInput;
   NOT?: ImageWhereInput[] | ImageWhereInput;
 }
 
-export type ProjectWhereUniqueInput = AtLeastOne<{
-  id: ID_Input;
-}>;
+export interface PostitCreateWithoutImageInput {
+  url: String;
+  detectedText?: String;
+  x: Int;
+  y: Int;
+  width: Int;
+  height: Int;
+}
+
+export interface PostitCreateManyWithoutImageInput {
+  create?: PostitCreateWithoutImageInput[] | PostitCreateWithoutImageInput;
+  connect?: PostitWhereUniqueInput[] | PostitWhereUniqueInput;
+}
+
+export interface ProjectCreateInput {
+  name: String;
+  url: String;
+}
+
+export interface ImageUpsertWithoutPostitsInput {
+  update: ImageUpdateWithoutPostitsDataInput;
+  create: ImageCreateWithoutPostitsInput;
+}
+
+export interface UserUpdateInput {
+  name?: String;
+}
+
+export interface UserSubscriptionWhereInput {
+  mutation_in?: MutationType[] | MutationType;
+  updatedFields_contains?: String;
+  updatedFields_contains_every?: String[] | String;
+  updatedFields_contains_some?: String[] | String;
+  node?: UserWhereInput;
+  AND?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  OR?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+  NOT?: UserSubscriptionWhereInput[] | UserSubscriptionWhereInput;
+}
+
+export interface PostitUpdateInput {
+  image?: ImageUpdateOneWithoutPostitsInput;
+  url?: String;
+  detectedText?: String;
+  x?: Int;
+  y?: Int;
+  width?: Int;
+  height?: Int;
+}
+
+export interface ImageUpdateWithoutPostitsDataInput {
+  url?: String;
+  detectedText?: String;
+  project?: ProjectUpdateOneInput;
+  status?: String;
+  width?: Int;
+  height?: Int;
+}
 
 export interface NodeNode {
   id: ID_Output;
+}
+
+export interface UserPreviousValuesNode {
+  id: ID_Output;
+  name: String;
+}
+
+export interface UserPreviousValues
+  extends Promise<UserPreviousValuesNode>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface UserPreviousValuesSubscription
+  extends Promise<AsyncIterator<UserPreviousValuesNode>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface PostitEdgeNode {
+  cursor: String;
+}
+
+export interface PostitEdge extends Promise<PostitEdgeNode>, Fragmentable {
+  node: <T = Postit>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface PostitEdgeSubscription
+  extends Promise<AsyncIterator<PostitEdgeNode>>,
+    Fragmentable {
+  node: <T = PostitSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface PostitNode {
+  id: ID_Output;
+  url: String;
+  detectedText?: String;
+  x: Int;
+  y: Int;
+  width: Int;
+  height: Int;
+}
+
+export interface Postit extends Promise<PostitNode>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  image: <T = Image>() => T;
+  url: () => Promise<String>;
+  detectedText: () => Promise<String>;
+  x: () => Promise<Int>;
+  y: () => Promise<Int>;
+  width: () => Promise<Int>;
+  height: () => Promise<Int>;
+}
+
+export interface PostitSubscription
+  extends Promise<AsyncIterator<PostitNode>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  image: <T = ImageSubscription>() => T;
+  url: () => Promise<AsyncIterator<String>>;
+  detectedText: () => Promise<AsyncIterator<String>>;
+  x: () => Promise<AsyncIterator<Int>>;
+  y: () => Promise<AsyncIterator<Int>>;
+  width: () => Promise<AsyncIterator<Int>>;
+  height: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface PostitConnectionNode {}
+
+export interface PostitConnection
+  extends Promise<PostitConnectionNode>,
+    Fragmentable {
+  pageInfo: <T = PageInfo>() => T;
+  edges: <T = FragmentableArray<PostitEdgeNode>>() => T;
+  aggregate: <T = AggregatePostit>() => T;
+}
+
+export interface PostitConnectionSubscription
+  extends Promise<AsyncIterator<PostitConnectionNode>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<PostitEdgeSubscription>>>() => T;
+  aggregate: <T = AggregatePostitSubscription>() => T;
+}
+
+export interface ProjectNode {
+  id: ID_Output;
+  name: String;
+  url: String;
+  createdAt: DateTimeOutput;
+}
+
+export interface Project extends Promise<ProjectNode>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  url: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+}
+
+export interface ProjectSubscription
+  extends Promise<AsyncIterator<ProjectNode>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  url: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+}
+
+export interface AggregateImageNode {
+  count: Int;
+}
+
+export interface AggregateImage
+  extends Promise<AggregateImageNode>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateImageSubscription
+  extends Promise<AsyncIterator<AggregateImageNode>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface UserEdgeNode {
+  cursor: String;
+}
+
+export interface UserEdge extends Promise<UserEdgeNode>, Fragmentable {
+  node: <T = User>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface UserEdgeSubscription
+  extends Promise<AsyncIterator<UserEdgeNode>>,
+    Fragmentable {
+  node: <T = UserSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface ImageEdgeNode {
+  cursor: String;
+}
+
+export interface ImageEdge extends Promise<ImageEdgeNode>, Fragmentable {
+  node: <T = Image>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface ImageEdgeSubscription
+  extends Promise<AsyncIterator<ImageEdgeNode>>,
+    Fragmentable {
+  node: <T = ImageSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface BatchPayloadNode {
+  count: Long;
+}
+
+export interface BatchPayload extends Promise<BatchPayloadNode>, Fragmentable {
+  count: () => Promise<Long>;
+}
+
+export interface BatchPayloadSubscription
+  extends Promise<AsyncIterator<BatchPayloadNode>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Long>>;
 }
 
 export interface UserConnectionNode {}
@@ -524,237 +996,6 @@ export interface PageInfoSubscription
   endCursor: () => Promise<AsyncIterator<String>>;
 }
 
-export interface UserPreviousValuesNode {
-  id: ID_Output;
-  name: String;
-}
-
-export interface UserPreviousValues
-  extends Promise<UserPreviousValuesNode>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface UserPreviousValuesSubscription
-  extends Promise<AsyncIterator<UserPreviousValuesNode>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface ImageConnectionNode {}
-
-export interface ImageConnection
-  extends Promise<ImageConnectionNode>,
-    Fragmentable {
-  pageInfo: <T = PageInfo>() => T;
-  edges: <T = FragmentableArray<ImageEdgeNode>>() => T;
-  aggregate: <T = AggregateImage>() => T;
-}
-
-export interface ImageConnectionSubscription
-  extends Promise<AsyncIterator<ImageConnectionNode>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<ImageEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateImageSubscription>() => T;
-}
-
-export interface UserEdgeNode {
-  cursor: String;
-}
-
-export interface UserEdge extends Promise<UserEdgeNode>, Fragmentable {
-  node: <T = User>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface UserEdgeSubscription
-  extends Promise<AsyncIterator<UserEdgeNode>>,
-    Fragmentable {
-  node: <T = UserSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateUserNode {
-  count: Int;
-}
-
-export interface AggregateUser
-  extends Promise<AggregateUserNode>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateUserSubscription
-  extends Promise<AsyncIterator<AggregateUserNode>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface ProjectSubscriptionPayloadNode {
-  mutation: MutationType;
-  updatedFields?: String[];
-}
-
-export interface ProjectSubscriptionPayload
-  extends Promise<ProjectSubscriptionPayloadNode>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = Project>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = ProjectPreviousValues>() => T;
-}
-
-export interface ProjectSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<ProjectSubscriptionPayloadNode>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = ProjectSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = ProjectPreviousValuesSubscription>() => T;
-}
-
-export interface UserNode {
-  id: ID_Output;
-  name: String;
-}
-
-export interface User extends Promise<UserNode>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface UserSubscription
-  extends Promise<AsyncIterator<UserNode>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateProjectNode {
-  count: Int;
-}
-
-export interface AggregateProject
-  extends Promise<AggregateProjectNode>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateProjectSubscription
-  extends Promise<AsyncIterator<AggregateProjectNode>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface ProjectEdgeNode {
-  cursor: String;
-}
-
-export interface ProjectEdge extends Promise<ProjectEdgeNode>, Fragmentable {
-  node: <T = Project>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface ProjectEdgeSubscription
-  extends Promise<AsyncIterator<ProjectEdgeNode>>,
-    Fragmentable {
-  node: <T = ProjectSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateImageNode {
-  count: Int;
-}
-
-export interface AggregateImage
-  extends Promise<AggregateImageNode>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateImageSubscription
-  extends Promise<AsyncIterator<AggregateImageNode>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface UserSubscriptionPayloadNode {
-  mutation: MutationType;
-  updatedFields?: String[];
-}
-
-export interface UserSubscriptionPayload
-  extends Promise<UserSubscriptionPayloadNode>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = User>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = UserPreviousValues>() => T;
-}
-
-export interface UserSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<UserSubscriptionPayloadNode>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = UserSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = UserPreviousValuesSubscription>() => T;
-}
-
-export interface ImagePreviousValuesNode {
-  id: ID_Output;
-  url: String;
-  detectedText: String;
-  createdAt: DateTimeOutput;
-  status: ImageStatus;
-}
-
-export interface ImagePreviousValues
-  extends Promise<ImagePreviousValuesNode>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  url: () => Promise<String>;
-  detectedText: () => Promise<String>;
-  createdAt: () => Promise<DateTimeOutput>;
-  status: () => Promise<ImageStatus>;
-}
-
-export interface ImagePreviousValuesSubscription
-  extends Promise<AsyncIterator<ImagePreviousValuesNode>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  url: () => Promise<AsyncIterator<String>>;
-  detectedText: () => Promise<AsyncIterator<String>>;
-  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
-  status: () => Promise<AsyncIterator<ImageStatus>>;
-}
-
-export interface ImageSubscriptionPayloadNode {
-  mutation: MutationType;
-  updatedFields?: String[];
-}
-
-export interface ImageSubscriptionPayload
-  extends Promise<ImageSubscriptionPayloadNode>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = Image>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = ImagePreviousValues>() => T;
-}
-
-export interface ImageSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<ImageSubscriptionPayloadNode>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = ImageSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = ImagePreviousValuesSubscription>() => T;
-}
-
 export interface ProjectPreviousValuesNode {
   id: ID_Output;
   name: String;
@@ -780,57 +1021,303 @@ export interface ProjectPreviousValuesSubscription
   createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
 }
 
-export interface ProjectNode {
+export interface ImageNode {
+  id: ID_Output;
+  url: String;
+  detectedText: String;
+  createdAt: DateTimeOutput;
+  status: String;
+  width?: Int;
+  height?: Int;
+}
+
+export interface Image extends Promise<ImageNode>, Fragmentable {
+  id: () => Promise<ID_Output>;
+  url: () => Promise<String>;
+  detectedText: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+  project: <T = Project>() => T;
+  status: () => Promise<String>;
+  width: () => Promise<Int>;
+  height: () => Promise<Int>;
+  postits: <T = FragmentableArray<PostitNode>>(
+    args?: {
+      where?: PostitWhereInput;
+      orderBy?: PostitOrderByInput;
+      skip?: Int;
+      after?: String;
+      before?: String;
+      first?: Int;
+      last?: Int;
+    }
+  ) => T;
+}
+
+export interface ImageSubscription
+  extends Promise<AsyncIterator<ImageNode>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  url: () => Promise<AsyncIterator<String>>;
+  detectedText: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+  project: <T = ProjectSubscription>() => T;
+  status: () => Promise<AsyncIterator<String>>;
+  width: () => Promise<AsyncIterator<Int>>;
+  height: () => Promise<AsyncIterator<Int>>;
+  postits: <T = Promise<AsyncIterator<PostitSubscription>>>(
+    args?: {
+      where?: PostitWhereInput;
+      orderBy?: PostitOrderByInput;
+      skip?: Int;
+      after?: String;
+      before?: String;
+      first?: Int;
+      last?: Int;
+    }
+  ) => T;
+}
+
+export interface UserNode {
   id: ID_Output;
   name: String;
-  url: String;
-  createdAt: DateTimeOutput;
 }
 
-export interface Project extends Promise<ProjectNode>, Fragmentable {
+export interface User extends Promise<UserNode>, Fragmentable {
   id: () => Promise<ID_Output>;
   name: () => Promise<String>;
-  url: () => Promise<String>;
-  createdAt: () => Promise<DateTimeOutput>;
 }
 
-export interface ProjectSubscription
-  extends Promise<AsyncIterator<ProjectNode>>,
+export interface UserSubscription
+  extends Promise<AsyncIterator<UserNode>>,
     Fragmentable {
   id: () => Promise<AsyncIterator<ID_Output>>;
   name: () => Promise<AsyncIterator<String>>;
-  url: () => Promise<AsyncIterator<String>>;
-  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
 }
 
-export interface BatchPayloadNode {
-  count: Long;
-}
-
-export interface BatchPayload extends Promise<BatchPayloadNode>, Fragmentable {
-  count: () => Promise<Long>;
-}
-
-export interface BatchPayloadSubscription
-  extends Promise<AsyncIterator<BatchPayloadNode>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Long>>;
-}
-
-export interface ImageEdgeNode {
+export interface ProjectEdgeNode {
   cursor: String;
 }
 
-export interface ImageEdge extends Promise<ImageEdgeNode>, Fragmentable {
-  node: <T = Image>() => T;
+export interface ProjectEdge extends Promise<ProjectEdgeNode>, Fragmentable {
+  node: <T = Project>() => T;
   cursor: () => Promise<String>;
 }
 
-export interface ImageEdgeSubscription
-  extends Promise<AsyncIterator<ImageEdgeNode>>,
+export interface ProjectEdgeSubscription
+  extends Promise<AsyncIterator<ProjectEdgeNode>>,
     Fragmentable {
-  node: <T = ImageSubscription>() => T;
+  node: <T = ProjectSubscription>() => T;
   cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface ImageSubscriptionPayloadNode {
+  mutation: MutationType;
+  updatedFields?: String[];
+}
+
+export interface ImageSubscriptionPayload
+  extends Promise<ImageSubscriptionPayloadNode>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = Image>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = ImagePreviousValues>() => T;
+}
+
+export interface ImageSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<ImageSubscriptionPayloadNode>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = ImageSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = ImagePreviousValuesSubscription>() => T;
+}
+
+export interface UserSubscriptionPayloadNode {
+  mutation: MutationType;
+  updatedFields?: String[];
+}
+
+export interface UserSubscriptionPayload
+  extends Promise<UserSubscriptionPayloadNode>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = User>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = UserPreviousValues>() => T;
+}
+
+export interface UserSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<UserSubscriptionPayloadNode>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = UserSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = UserPreviousValuesSubscription>() => T;
+}
+
+export interface ImageConnectionNode {}
+
+export interface ImageConnection
+  extends Promise<ImageConnectionNode>,
+    Fragmentable {
+  pageInfo: <T = PageInfo>() => T;
+  edges: <T = FragmentableArray<ImageEdgeNode>>() => T;
+  aggregate: <T = AggregateImage>() => T;
+}
+
+export interface ImageConnectionSubscription
+  extends Promise<AsyncIterator<ImageConnectionNode>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<ImageEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateImageSubscription>() => T;
+}
+
+export interface PostitPreviousValuesNode {
+  id: ID_Output;
+  url: String;
+  detectedText?: String;
+  x: Int;
+  y: Int;
+  width: Int;
+  height: Int;
+}
+
+export interface PostitPreviousValues
+  extends Promise<PostitPreviousValuesNode>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  url: () => Promise<String>;
+  detectedText: () => Promise<String>;
+  x: () => Promise<Int>;
+  y: () => Promise<Int>;
+  width: () => Promise<Int>;
+  height: () => Promise<Int>;
+}
+
+export interface PostitPreviousValuesSubscription
+  extends Promise<AsyncIterator<PostitPreviousValuesNode>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  url: () => Promise<AsyncIterator<String>>;
+  detectedText: () => Promise<AsyncIterator<String>>;
+  x: () => Promise<AsyncIterator<Int>>;
+  y: () => Promise<AsyncIterator<Int>>;
+  width: () => Promise<AsyncIterator<Int>>;
+  height: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface PostitSubscriptionPayloadNode {
+  mutation: MutationType;
+  updatedFields?: String[];
+}
+
+export interface PostitSubscriptionPayload
+  extends Promise<PostitSubscriptionPayloadNode>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = Postit>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = PostitPreviousValues>() => T;
+}
+
+export interface PostitSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<PostitSubscriptionPayloadNode>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = PostitSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = PostitPreviousValuesSubscription>() => T;
+}
+
+export interface ProjectSubscriptionPayloadNode {
+  mutation: MutationType;
+  updatedFields?: String[];
+}
+
+export interface ProjectSubscriptionPayload
+  extends Promise<ProjectSubscriptionPayloadNode>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = Project>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = ProjectPreviousValues>() => T;
+}
+
+export interface ProjectSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<ProjectSubscriptionPayloadNode>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = ProjectSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = ProjectPreviousValuesSubscription>() => T;
+}
+
+export interface ImagePreviousValuesNode {
+  id: ID_Output;
+  url: String;
+  detectedText: String;
+  createdAt: DateTimeOutput;
+  status: String;
+  width?: Int;
+  height?: Int;
+}
+
+export interface ImagePreviousValues
+  extends Promise<ImagePreviousValuesNode>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  url: () => Promise<String>;
+  detectedText: () => Promise<String>;
+  createdAt: () => Promise<DateTimeOutput>;
+  status: () => Promise<String>;
+  width: () => Promise<Int>;
+  height: () => Promise<Int>;
+}
+
+export interface ImagePreviousValuesSubscription
+  extends Promise<AsyncIterator<ImagePreviousValuesNode>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  url: () => Promise<AsyncIterator<String>>;
+  detectedText: () => Promise<AsyncIterator<String>>;
+  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
+  status: () => Promise<AsyncIterator<String>>;
+  width: () => Promise<AsyncIterator<Int>>;
+  height: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AggregateUserNode {
+  count: Int;
+}
+
+export interface AggregateUser
+  extends Promise<AggregateUserNode>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateUserSubscription
+  extends Promise<AsyncIterator<AggregateUserNode>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AggregatePostitNode {
+  count: Int;
+}
+
+export interface AggregatePostit
+  extends Promise<AggregatePostitNode>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregatePostitSubscription
+  extends Promise<AsyncIterator<AggregatePostitNode>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface ProjectConnectionNode {}
@@ -851,38 +1338,21 @@ export interface ProjectConnectionSubscription
   aggregate: <T = AggregateProjectSubscription>() => T;
 }
 
-export interface ImageNode {
-  id: ID_Output;
-  url: String;
-  detectedText: String;
-  createdAt: DateTimeOutput;
-  status: ImageStatus;
+export interface AggregateProjectNode {
+  count: Int;
 }
 
-export interface Image extends Promise<ImageNode>, Fragmentable {
-  id: () => Promise<ID_Output>;
-  url: () => Promise<String>;
-  detectedText: () => Promise<String>;
-  createdAt: () => Promise<DateTimeOutput>;
-  project: <T = Project>() => T;
-  status: () => Promise<ImageStatus>;
-}
-
-export interface ImageSubscription
-  extends Promise<AsyncIterator<ImageNode>>,
+export interface AggregateProject
+  extends Promise<AggregateProjectNode>,
     Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  url: () => Promise<AsyncIterator<String>>;
-  detectedText: () => Promise<AsyncIterator<String>>;
-  createdAt: () => Promise<AsyncIterator<DateTimeOutput>>;
-  project: <T = ProjectSubscription>() => T;
-  status: () => Promise<AsyncIterator<ImageStatus>>;
+  count: () => Promise<Int>;
 }
 
-/*
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
-*/
-export type Int = number;
+export interface AggregateProjectSubscription
+  extends Promise<AsyncIterator<AggregateProjectNode>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
 
 /*
 The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
@@ -891,11 +1361,9 @@ export type ID_Input = string | number;
 export type ID_Output = string;
 
 /*
-The `Boolean` scalar type represents `true` or `false`.
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 */
-export type Boolean = boolean;
-
-export type Long = string;
+export type String = string;
 
 /*
 DateTime scalar input type, allowing Date
@@ -908,9 +1376,16 @@ DateTime scalar output type, which is always a string
 export type DateTimeOutput = string;
 
 /*
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
 */
-export type String = string;
+export type Int = number;
+
+export type Long = string;
+
+/*
+The `Boolean` scalar type represents `true` or `false`.
+*/
+export type Boolean = boolean;
 
 /**
  * Type Defs
